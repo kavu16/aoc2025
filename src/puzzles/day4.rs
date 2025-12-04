@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, iter::successors};
 
 const DIRECTIONS: [(i32, i32); 8] = [
     (0, 1),
@@ -44,20 +44,19 @@ pub fn solve1(data: &str) -> usize {
 }
 
 pub fn solve2(data: &str) -> usize {
-    let mut roll_map = find_rolls(data);
-    let mut total_removed = 0;
-    loop {
-        let (removed, remain): (HashSet<(i32, i32)>, HashSet<(i32, i32)>) = roll_map
+    let res = successors(Some((0, find_rolls(data))), |(_, roll_map)| {
+        let (removed, remain): (HashSet<_>, HashSet<_>) = roll_map
             .iter()
             .partition(|coord| accessible(coord, &roll_map));
-
         if removed.len() == 0 {
-            break;
+            None
+        } else {
+            Some((removed.len(), remain))
         }
-        roll_map = remain;
-        total_removed += removed.len();
-    }
-    let res = total_removed;
+    })
+    .map(|(removed, _)| removed)
+    .sum();
+
     println!("Day 4 Part 2 = {res}");
     res
 }
