@@ -38,14 +38,43 @@ pub fn solve1(data: &str) -> usize {
 pub fn solve2(data: &str) -> usize {
     let grid = data
         .lines()
-        .map(|row| row.chars().collect::<Vec<_>>())
+        .map(|row| {
+            row.chars()
+                .map(|c| match c {
+                    'S' | '^' => 1,
+                    _ => 0,
+                })
+                .collect::<Vec<_>>()
+        })
         .collect::<Vec<_>>();
 
-    let mut cache = HashMap::new();
-    let start = grid[0].iter().position(|c| *c == 'S').unwrap();
-    let paths = tachyon_paths(1, start, &grid, &mut cache);
+    // let mut cache = HashMap::new();
+    // let start = grid[0].iter().position(|c| *c == 'S').unwrap();
+    // let paths = tachyon_paths(1, start, &grid, &mut cache);
+    let paths = tachyon_paths_iter(grid);
     println!("Day 7 Part 2 = {paths}");
     paths
+}
+
+fn tachyon_paths_iter(grid: Vec<Vec<usize>>) -> usize {
+    grid.into_iter()
+        .reduce(|mut prev, curr| {
+            for (i, &c) in curr.iter().enumerate() {
+                if c == 1 {
+                    if i > 0 {
+                        prev[i - 1] += prev[i];
+                    }
+                    if i < curr.len() - 1 {
+                        prev[i + 1] += prev[i];
+                    }
+                    prev[i] = 0;
+                }
+            }
+            prev
+        })
+        .unwrap_or_default()
+        .into_iter()
+        .sum()
 }
 
 fn tachyon_paths(
