@@ -77,7 +77,7 @@ fn tachyon_paths_iter(grid: Vec<Vec<usize>>) -> usize {
         .sum()
 }
 
-fn tachyon_paths(
+fn _tachyon_paths(
     row: usize,
     col: usize,
     grid: &Vec<Vec<char>>,
@@ -92,15 +92,15 @@ fn tachyon_paths(
     }
 
     let paths = match grid[row][col] {
-        '.' => tachyon_paths(row + 1, col, grid, cache),
+        '.' => _tachyon_paths(row + 1, col, grid, cache),
         '^' => {
             let left = if col > 0 {
-                tachyon_paths(row + 1, col - 1, grid, cache)
+                _tachyon_paths(row + 1, col - 1, grid, cache)
             } else {
                 0
             };
             let right = if col < grid[row].len() - 1 {
-                tachyon_paths(row + 1, col + 1, grid, cache)
+                _tachyon_paths(row + 1, col + 1, grid, cache)
             } else {
                 0
             };
